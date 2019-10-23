@@ -4,17 +4,24 @@ const port = 3000
 
 const exphbs = require("express-handlebars")
 app.engine("handlebars",exphbs({defaultLayout:"main"}))
-app.use("view engine", "handlebars")
+app.set("view engine", "handlebars")
 
 const bodyParser = require("body-parser")
 app.use(bodyParser.urlencoded({extended:true}))
 
-const flash = require("connect-flash")
+const session = require("express-session")
+app.use(session({
+    secret: "your secret key",
+    resave: false,
+    saveUninitialized: true
+}))
+
+const flash = require('connect-flash')
 app.use(flash())
 
-app.use((req,res,next)=>{
-    res.locals.success_msg = req.flash("success_msg")
-    res.locals.warning_msg = req.flash("warning_msg")
+app.use((req, res, next) => {
+    res.locals.success_msg = req.flash('success_msg')
+    res.locals.warning_msg = req.flash('warning_msg')
     next()
 })
 
