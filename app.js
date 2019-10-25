@@ -1,3 +1,18 @@
+const mongoose = require("mongoose")
+mongoose.connect("mongodb://localhost:3000/url",{useNewUrlParser:true, useCreateIndex:true, useUnifiedTopology:true})
+const db = mongoose.connection
+
+const Url = mongoose.model("url")
+const urlCheck = require("./lib/url")
+
+db.on("error", ()=>{
+    console.log("mongodb error")
+})
+
+db.once("open", ()=>{
+    console.log("mongodb connected")
+})
+
 const express = require("express")
 const app = express()
 const port = 3000
@@ -25,24 +40,53 @@ app.use((req, res, next) => {
     next()
 })
 
-const mongoose = require("mongoose")
-mongoose.connect("mongodb://localhost/url",{useNewUrlParser:true, useCreateIndex:true, useUnifiedTopology:true})
 
-const db = mongoose.connection
 
-db.on("error", ()=>{
-    console.log("mongodb error")
-})
 
-db.once("open", ()=>{
-    console.log("mongodb connected")
-})
 
 app.get("/", (req,res)=>{
     res.render("index")
+})
+
+app.post("/", (req,res) =>{
+    let url = findOne({longUrl : req.body.longUrl}).exec()
+    const basicUrl = req.get("origin")
+
+    if(url){
+        res.render("index",{
+            shortUrl: basicUrl + url.shortUrl,
+            longUrl: url.longUrl
+        })
+    }else{
+        let shortDigit = checkUrl()
+        const newUrl = new Url({
+            longUrl: req.body.longUrl,
+            shortUrl: shortDigit
+        })
+        newUrl.save()
+        res.render("index",{
+            shortUrl:basicUrl + shortDigit,
+            longUrl: req.body.longUrl
+        })
+    }
+
+})
+
+app.get("/:shortDigit",(req,res) => {
+    Url.findOne({shortUrl: req.params.shortDigit},(err,url)=>{
+        if(err) throw err
+
+        if(url){
+            res.redirect(url.longUrl)
+        }else{
+            req.flash("warning_msg","網址錯誤")
+            res.redirect("/")
+        }
+    })
 })
 
 
 app.listen(port, ()=>{
     console.log("app is running")
 })
+
