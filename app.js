@@ -1,5 +1,5 @@
 const mongoose = require("mongoose")
-mongoose.connect("mongodb://localhost/url", {
+mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/url", {
     useNewUrlParser: true,
     useCreateIndex: true,
     useUnifiedTopology: true
@@ -20,6 +20,10 @@ db.once("open", () => {
 const express = require("express")
 const app = express()
 const port = 3000
+
+if (process.env.NODE_ENV !== 'production') {
+    require('dotenv').config()
+  }
 
 const exphbs = require("express-handlebars")
 app.engine("handlebars", exphbs({
@@ -57,7 +61,7 @@ app.post("/", async (req, res) => {
         let url = await Url.findOne({
             longUrl: req.body.longUrl
         }).exec()
-        
+
         const basicUrl = `${req.get("origin")}/`
 
         if (url) {
@@ -99,6 +103,6 @@ app.get('/:shortUrl', (req, res) => {
     })
 })
 
-app.listen(port, () => {
+app.listen(process.env.PORT || port, () => {
     console.log("app is running")
 })
