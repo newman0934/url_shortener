@@ -2,15 +2,18 @@
     <div class="row h-100">
         <div class="col-sm-6 m-auto">
             <h1 class="text-center">URL Shorten</h1>
-            <h1 class="text-center"><i class="fas fa-link"></i></h1>
+            <h1 class="text-center">
+                <i class="fas fa-link"></i>
+            </h1>
             <form action="/" method="POST">
+             {{> messages }}
                 <div class="form-group">
-                    <label for="url-long">輸入網址：</label>
-                    <input type="url" class="form-control" id="url-long" name="url-long" placeholder="請輸入網址(含http或是https)">
+                    <label for="longUrl">輸入網址：</label>
+                    <input type="url" class="form-control" value="{{longUrl}}" id="longUrl" name="longUrl" placeholder="請輸入網址(含http或是https)">
                 </div>
                 <div class="form-group">
-                    <label for="url-short">短網址(無法輸入內容)</label>
-                    <input type="text" class="form-control" id="url-short" name="url-short" placeholder="轉址後的短網址" disabled>
+                    <label for="shortUrl">短網址(無法輸入內容)</label>
+                    <input type="text" class="form-control" id="shortUrl" name="shortUrl" value="{{shortUrl}}" placeholder="轉址後的短網址" disabled>
                 </div>
                 <button class="btn btn-primary" id="submit">送出</button>
             </form>
